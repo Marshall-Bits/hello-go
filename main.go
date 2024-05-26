@@ -1,12 +1,12 @@
 // Package main is the entry point of the program.
+// the function main() is going to be executed when the program runs.
 package main
 
-// Importing the fmt package, this package is used for printing to the console.
 import (
 	"context"
 	"encoding/json"
-	"fmt" 
-	"log" 
+	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"time"
@@ -82,7 +82,7 @@ func getAllRobots() ([]bson.M, error) {
 // HTTP HANDLER
 func fetchAllRobots(w http.ResponseWriter, r *http.Request) {
 	// Log request details
-    log.Printf("Received \033[32m%s\033[0m request for \033[34m%s\033[0m from: %s", r.Method, r.URL.Path, r.RemoteAddr)
+	log.Printf("Received \033[32m%s\033[0m request for \033[34m%s\033[0m from: %s", r.Method, r.URL.Path, r.RemoteAddr)
 
 	robots, err := getAllRobots()
 
@@ -114,7 +114,7 @@ func main() {
 		log.Fatalf("Error connecting to MongoDB: %v", err)
 	}
 
-	defer func () {
+	defer func() {
 		if err := client.Disconnect(context.Background()); err != nil {
 			log.Fatalf("Error disconnecting from MongoDB: %v", err)
 		}
@@ -122,6 +122,9 @@ func main() {
 
 	http.HandleFunc("/", sayHi)
 	http.HandleFunc("/all-robots", fetchAllRobots)
+	http.HandleFunc("/error", func(w http.ResponseWriter, r *http.Request) {
+		http.Error(w, "This is an error", http.StatusNotFound)
+	})
 
 	log.Println("Server is running on port 8008")
 	if err := http.ListenAndServe(":8008", nil); err != nil {
